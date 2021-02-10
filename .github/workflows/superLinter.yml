@@ -21,5 +21,9 @@ jobs:
       - name: Run Super-Linter
         uses: github/super-linter@v3
         env:
+          VALIDATE_YAML: true
+          VALIDATE_BASH_EXEC: true
+          VALIDATE_DOCKERFILE: true
+          VALIDATE_PYTHON_PYLINT: true
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
