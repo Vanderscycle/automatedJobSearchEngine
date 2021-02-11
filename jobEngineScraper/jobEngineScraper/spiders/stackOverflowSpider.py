@@ -24,13 +24,14 @@ class flyerSpider(scrapy.Spider):
     name = 'SOJobspider'
     page = 1
     # settings only meant for the spider
-    # custom_settings = { 
-    #     'MONGO_COLLECTION': 'stackOverflow',
-    #     'ITEM_PIPELINES': { 
-    #         'jobEngineScraper.pipelines.FlyerPipeline': 300,
-    #     }
+    custom_settings = { 
+        'MONGO_COLLECTION': 'stackOverflow',
+        'DUPEFILTER_DEBUG' : True,#allows the spider to not stop over duplicates 
+        'ITEM_PIPELINES': { 
+            'jobEngineScraper.pipelines.MongoPipeline': 300,
+        }
     
-    # }
+    }
 
     
     def start_requests(self): 

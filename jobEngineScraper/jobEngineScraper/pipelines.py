@@ -12,7 +12,7 @@ logger = Console()
 #let's try the scrapy way with all the info in setting
 # https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-class MongoPipeline:
+class MongoPipeline(object):
     """
     Description:
         - class used to handle the spider's output with our database
@@ -21,7 +21,7 @@ class MongoPipeline:
     output:
         - outputs in the mongodb
     """
-    def __init__(self,mongoIp,mongoPort,mongoDatabase,mongoCollection):
+    def __init__(self, mongoIp, mongoPort, mongoDatabase, mongoCollection):
         self.mongoIp = mongoIp
         self.mongoPort = mongoPort
         self.mongoDatabase = mongoDatabase
@@ -31,11 +31,11 @@ class MongoPipeline:
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
-            mongoIP=crawler.settings.get('MONGO_IP'),
+            mongoIp=crawler.settings.get('MONGO_IP'),
             mongoPort=crawler.settings.get('MONGO_PORT'),
-            mongoDatabase=crawler.settings.get('MONGO_DATABASE', 'items')
+            mongoDatabase=crawler.settings.get('MONGO_DATABASE', 'items'),
             # from custom settings
-            mongoCollection=crawler.settings.get('MONGO_COLLECTION'),
+            mongoCollection=crawler.settings.get('MONGO_COLLECTION')
         )
 
     def open_spider(self, spider):
@@ -48,54 +48,10 @@ class MongoPipeline:
 
     def process_item(self, item, spider):
         #if there's no record
-        if not self.collection.count_documents({ 'url': item[url] }, limit = 1):
+        if not self.collection.count_documents({ 'url': item['url'] }, limit = 1):
             self.collection.insert_one(ItemAdapter(item).asdict())
         # print 
-        for k,v in item.items():
-            logger.log(f'key/value: {k} : {v}')
+        # for k,v in item.items():
+        #     logger.log(f'key/value: {k} : {v}')
         return item
 
-
-class JobenginescraperPipeline:
-
-    def __init__(self):
-        # requires two arguments
-        self.conn = pymongo.MongoClient(
-            '127.0.0.1',27017)
-        
-
-        dbnames = self.conn.list_database_names()
-        if 'jobSearch' not in dbnames:
-            # creating the database
-            # mongodb doesn't take capitilization
-            self.db = self.conn['jobSearch']
-
-        #the database already exists
-        else:
-            # we acces the db
-
-            self.db = self.conn.jobSearch
-
-        dbCollectionNames = self.db.list_collection_names()
-        if 'amazonWholeFood' not in dbCollectionNames:
-            self.collection = self.db['amazonWholeFood']
-        
-        else:
-            # we acces the db collection
-            self.collection = self.db.amazonWholeFood
-
-    # def process_item(self, item, spider):
-
-
-    #     try:
-    #         # insert Many requires a dict of dict. i
-    #         self.collection.insert_one(dict(item))
-    #         # self.collection.update(dict(item),{ 'upsert': 'true' })
-        
-    #     except Exception as e:
-    #         print('\n','--- ERROR ---',e,'\n')
-    #     # in the future 
-
-    #     for k,v in item.items():
-    #         print(f'key/value: {k} : {v}')
-    #     return item

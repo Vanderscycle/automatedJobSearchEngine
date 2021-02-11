@@ -1,4 +1,4 @@
-# fro loading file passwords
+# from loading file passwords
 import os
 # taken from
 # https://stackoverflow.com/questions/42095184/scrapy-framework-colorize-logging
@@ -45,8 +45,8 @@ scrapy.utils.log._get_handler = _get_handler_custom
 
 # when ready we will move these to the .env file
 MONGO_IP = '127.0.0.1'
-MONGO_PORT = '27017'
-MONGO_DATABASE = 'JobSearch'
+MONGO_PORT = 27017
+MONGO_DATABASE = 'jobSearch'
 # SMARTPROXY_USER = os.environ.get("SMARTPROXY_USER") # how to do it
 
 BOT_NAME = 'jobEngineScraper'
@@ -54,7 +54,7 @@ BOT_NAME = 'jobEngineScraper'
 SPIDER_MODULES = ['jobEngineScraper.spiders']
 NEWSPIDER_MODULE = 'jobEngineScraper.spiders'
 
-DUPEFILTER_DEBUG = True 
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'jobEngineScraper (+http://www.yourdomain.com)'
 
@@ -129,6 +129,7 @@ AUTOTHROTTLE_ENABLED = True
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+# github repo
 # https://github.com/alecxe/scrapy-fake-useragent
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
