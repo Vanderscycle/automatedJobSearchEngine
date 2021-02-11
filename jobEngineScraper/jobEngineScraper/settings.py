@@ -1,3 +1,5 @@
+# fro loading file passwords
+import os
 # taken from
 # https://stackoverflow.com/questions/42095184/scrapy-framework-colorize-logging
 import copy
@@ -31,6 +33,7 @@ def _get_handler_custom(*args, **kwargs):
 
 scrapy.utils.log._get_handler = _get_handler_custom
 
+
 # Scrapy settings for jobEngineScraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -40,12 +43,18 @@ scrapy.utils.log._get_handler = _get_handler_custom
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+# when ready we will move these to the .env file
+MONGO_IP = '127.0.0.1'
+MONGO_PORT = '27017'
+MONGO_DATABASE = 'JobSearch'
+# SMARTPROXY_USER = os.environ.get("SMARTPROXY_USER") # how to do it
+
 BOT_NAME = 'jobEngineScraper'
 
 SPIDER_MODULES = ['jobEngineScraper.spiders']
 NEWSPIDER_MODULE = 'jobEngineScraper.spiders'
 
-
+DUPEFILTER_DEBUG = True 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'jobEngineScraper (+http://www.yourdomain.com)'
 
@@ -119,3 +128,16 @@ AUTOTHROTTLE_ENABLED = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# https://github.com/alecxe/scrapy-fake-useragent
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+    'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 401,
+}
+FAKEUSERAGENT_PROVIDERS = [
+    'scrapy_fake_useragent.providers.FakeUserAgentProvider',  # this is the first provider we'll try
+    'scrapy_fake_useragent.providers.FakerProvider',  # if FakeUserAgentProvider fails, we'll use faker to generate a user-agent string for us
+    'scrapy_fake_useragent.providers.FixedUserAgentProvider',  # fall back to USER_AGENT value
+]

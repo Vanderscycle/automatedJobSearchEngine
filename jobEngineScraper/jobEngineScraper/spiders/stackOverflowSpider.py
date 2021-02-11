@@ -23,6 +23,14 @@ class flyerSpider(scrapy.Spider):
     # class variable for crawl command
     name = 'SOJobspider'
     page = 1
+    # settings only meant for the spider
+    # custom_settings = { 
+    #     'MONGO_COLLECTION': 'stackOverflow',
+    #     'ITEM_PIPELINES': { 
+    #         'jobEngineScraper.pipelines.FlyerPipeline': 300,
+    #     }
+    
+    # }
 
     
     def start_requests(self): 
