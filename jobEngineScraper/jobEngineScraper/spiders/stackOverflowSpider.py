@@ -92,6 +92,11 @@ class flyerSpider(scrapy.Spider):
         job['time'] = timestampReceival()
         yield job
 
+if __name__ == "__main__":
+    
+    process = CrawlerProcess()
+    process.crawl(MySpider)
+    process.start() 
 # (1) gets you the href of all jobs
 # response.css('.stretched-link::attr(href)').getall()
 # gets you their titles although only relevant as a way to determine if we should scrape or not

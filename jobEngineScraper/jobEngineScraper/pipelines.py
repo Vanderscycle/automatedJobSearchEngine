@@ -21,11 +21,15 @@ class MongoPipeline(object):
     output:
         - outputs in the mongodb
     """
-    def __init__(self, mongoIp, mongoPort, mongoDatabase, mongoCollection):
+    def __init__(self, mongoIp, mongoPort, mongoDatabase, mongoCollection, username, password, authSource, mode):
         self.mongoIp = mongoIp
         self.mongoPort = mongoPort
         self.mongoDatabase = mongoDatabase
         self.mongoCollection = mongoCollection
+        self.mongoUsername = username
+        self.mongoUserPassword = password
+        self.authSource = authSource
+        self.mode = mode
 
 
     @classmethod
@@ -34,12 +38,29 @@ class MongoPipeline(object):
             mongoIp=crawler.settings.get('MONGO_IP'),
             mongoPort=crawler.settings.get('MONGO_PORT'),
             mongoDatabase=crawler.settings.get('MONGO_DATABASE', 'items'),
+            username=crawler.settings.get('USERNAME'),
+            password=crawler.settings.get('USERPASSWORD'),
+            authSource=crawler.settings.get('MONGO_COLLECTION'),
+            mode=crawler.settings.get('MODE'),
             # from custom settings
             mongoCollection=crawler.settings.get('MONGO_COLLECTION')
         )
 
+    # self.conn = pymongo.MongoClient(host='NoSQLDB',port=27017,username='root',password='password',authSource="admin")
     def open_spider(self, spider):
-        self.conn = pymongo.MongoClient(self.mongoIp,self.mongoPort)
+        if self.mode == 'docker':
+            self.conn = pymongo.MongoClient(
+                    host=self.mongoIp,
+                    port=self.mongoPort,
+                    username=self.mongoUsername,
+                    password=self.mongoUserPassword,
+                    authSource=self.authSource
+                )
+        else:
+            self.conn = pymongo.MongoClient(
+                    self.mongoIp,
+                    self.mongoPort
+                )
         self.db = self.conn[self.mongoDatabase]
         self.collection = self.db[self.mongoCollection]
 
