@@ -57,6 +57,7 @@ class MongoPipeline(object):
                     authSource=self.authSource
                 )
         else:
+            self.mongoIp = '127.0.0.1'
             self.conn = pymongo.MongoClient(
                     self.mongoIp,
                     self.mongoPort

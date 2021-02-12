@@ -1,0 +1,164 @@
+Sending build context to Docker daemon   47.1kB
+Step 1/11 : FROM python:3
+ ---> 2770b69c10e1
+Step 2/11 : LABEL maintainer "Henri Vandersleyen <hvandersleyen@gmail.com>"
+ ---> Running in 5612967adb2d
+Removing intermediate container 5612967adb2d
+ ---> 5a8bb99764b7
+Step 3/11 : EXPOSE 6023
+ ---> Running in 6ea4ac1677f6
+Removing intermediate container 6ea4ac1677f6
+ ---> 7d48624b7402
+Step 4/11 : WORKDIR /usr/src/app
+ ---> Running in 218be1d985e7
+Removing intermediate container 218be1d985e7
+ ---> 4946f1959a74
+Step 5/11 : COPY requirements.txt ./
+ ---> 827b46c6a8c0
+Step 6/11 : RUN python -m pip install --upgrade pip
+ ---> Running in 149e32e70ad0
+Requirement already satisfied: pip in /usr/local/lib/python3.9/site-packages (20.3.3)
+Collecting pip
+  Downloading pip-21.0.1-py3-none-any.whl (1.5 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 20.3.3
+    Uninstalling pip-20.3.3:
+      Successfully uninstalled pip-20.3.3
+Successfully installed pip-21.0.1
+Removing intermediate container 149e32e70ad0
+ ---> cba8cd2022e7
+Step 7/11 : RUN pip3 install nltk
+ ---> Running in 48b8434ef084
+Collecting nltk
+  Downloading nltk-3.5.zip (1.4 MB)
+Collecting click
+  Downloading click-7.1.2-py2.py3-none-any.whl (82 kB)
+Collecting joblib
+  Downloading joblib-1.0.1-py3-none-any.whl (303 kB)
+Collecting regex
+  Downloading regex-2020.11.13-cp39-cp39-manylinux2014_x86_64.whl (732 kB)
+Collecting tqdm
+  Downloading tqdm-4.56.2-py2.py3-none-any.whl (72 kB)
+Building wheels for collected packages: nltk
+  Building wheel for nltk (setup.py): started
+  Building wheel for nltk (setup.py): finished with status 'done'
+  Created wheel for nltk: filename=nltk-3.5-py3-none-any.whl size=1434677 sha256=3dede384fbcf926ce728b5876fde5ae1c6605a2757625c38f49ab6f0516ab4ab
+  Stored in directory: /root/.cache/pip/wheels/13/ae/bb/5e2a232ebaa1d2f38dd5f587e9fc4cf6ccb12758d14dac14d8
+Successfully built nltk
+Installing collected packages: tqdm, regex, joblib, click, nltk
+Successfully installed click-7.1.2 joblib-1.0.1 nltk-3.5 regex-2020.11.13 tqdm-4.56.2
+Removing intermediate container 48b8434ef084
+ ---> dd6bc633234a
+Step 8/11 : RUN [ "python", "-c", "import nltk; nltk.download('english')" ]
+ ---> Running in 1853777151a8
+[91m[nltk_data] Error loading english: Package 'english' not found in
+[nltk_data]     index
+[0mRemoving intermediate container 1853777151a8
+ ---> a2abb12aefc0
+Step 9/11 : RUN pip3 install --no-cache-dir -r requirements.txt
+ ---> Running in 4f56cb64b7b1
+Collecting Scrapy
+  Downloading Scrapy-2.4.1-py2.py3-none-any.whl (239 kB)
+Collecting pymongo
+  Downloading pymongo-3.11.3-cp39-cp39-manylinux2014_x86_64.whl (518 kB)
+Collecting w3lib
+  Downloading w3lib-1.22.0-py2.py3-none-any.whl (20 kB)
+Collecting colorlog
+  Downloading colorlog-4.7.2-py2.py3-none-any.whl (10 kB)
+Collecting itemadapter
+  Downloading itemadapter-0.2.0-py3-none-any.whl (9.3 kB)
+Requirement already satisfied: nltk in /usr/local/lib/python3.9/site-packages (from -r requirements.txt (line 6)) (3.5)
+Collecting python-dotenv
+  Downloading python_dotenv-0.15.0-py2.py3-none-any.whl (18 kB)
+Collecting rich
+  Downloading rich-9.10.0-py3-none-any.whl (188 kB)
+Requirement already satisfied: joblib in /usr/local/lib/python3.9/site-packages (from nltk->-r requirements.txt (line 6)) (1.0.1)
+Requirement already satisfied: click in /usr/local/lib/python3.9/site-packages (from nltk->-r requirements.txt (line 6)) (7.1.2)
+Requirement already satisfied: regex in /usr/local/lib/python3.9/site-packages (from nltk->-r requirements.txt (line 6)) (2020.11.13)
+Requirement already satisfied: tqdm in /usr/local/lib/python3.9/site-packages (from nltk->-r requirements.txt (line 6)) (4.56.2)
+Collecting commonmark<0.10.0,>=0.9.0
+  Downloading commonmark-0.9.1-py2.py3-none-any.whl (51 kB)
+Collecting pygments<3.0.0,>=2.6.0
+  Downloading Pygments-2.7.4-py3-none-any.whl (950 kB)
+Collecting typing-extensions<4.0.0,>=3.7.4
+  Downloading typing_extensions-3.7.4.3-py3-none-any.whl (22 kB)
+Collecting colorama<0.5.0,>=0.4.0
+  Downloading colorama-0.4.4-py2.py3-none-any.whl (16 kB)
+Collecting Twisted>=17.9.0
+  Downloading Twisted-20.3.0.tar.bz2 (3.1 MB)
+Collecting itemloaders>=1.0.1
+  Downloading itemloaders-1.0.4-py3-none-any.whl (11 kB)
+Collecting service-identity>=16.0.0
+  Downloading service_identity-18.1.0-py2.py3-none-any.whl (11 kB)
+Collecting queuelib>=1.4.2
+  Downloading queuelib-1.5.0-py2.py3-none-any.whl (13 kB)
+Collecting pyOpenSSL>=16.2.0
+  Downloading pyOpenSSL-20.0.1-py2.py3-none-any.whl (54 kB)
+Collecting protego>=0.1.15
+  Downloading Protego-0.1.16.tar.gz (3.2 MB)
+Collecting cssselect>=0.9.1
+  Downloading cssselect-1.1.0-py2.py3-none-any.whl (16 kB)
+Collecting parsel>=1.5.0
+  Downloading parsel-1.6.0-py2.py3-none-any.whl (13 kB)
+Collecting cryptography>=2.0
+  Downloading cryptography-3.4.4-cp36-abi3-manylinux2014_x86_64.whl (3.2 MB)
+Collecting lxml>=3.5.0
+  Downloading lxml-4.6.2-cp39-cp39-manylinux1_x86_64.whl (5.4 MB)
+Collecting PyDispatcher>=2.0.5
+  Downloading PyDispatcher-2.0.5.zip (47 kB)
+Collecting zope.interface>=4.1.3
+  Downloading zope.interface-5.2.0-cp39-cp39-manylinux2010_x86_64.whl (241 kB)
+Collecting six>=1.4.1
+  Downloading six-1.15.0-py2.py3-none-any.whl (10 kB)
+Collecting cffi>=1.12
+  Downloading cffi-1.14.5-cp39-cp39-manylinux1_x86_64.whl (406 kB)
+Collecting pycparser
+  Downloading pycparser-2.20-py2.py3-none-any.whl (112 kB)
+Collecting jmespath>=0.9.5
+  Downloading jmespath-0.10.0-py2.py3-none-any.whl (24 kB)
+Collecting pyasn1
+  Downloading pyasn1-0.4.8-py2.py3-none-any.whl (77 kB)
+Collecting attrs>=16.0.0
+  Downloading attrs-20.3.0-py2.py3-none-any.whl (49 kB)
+Collecting pyasn1-modules
+  Downloading pyasn1_modules-0.2.8-py2.py3-none-any.whl (155 kB)
+Collecting constantly>=15.1
+  Downloading constantly-15.1.0-py2.py3-none-any.whl (7.9 kB)
+Collecting incremental>=16.10.1
+  Downloading incremental-17.5.0-py2.py3-none-any.whl (16 kB)
+Collecting Automat>=0.3.0
+  Downloading Automat-20.2.0-py2.py3-none-any.whl (31 kB)
+Collecting hyperlink>=17.1.1
+  Downloading hyperlink-21.0.0-py2.py3-none-any.whl (74 kB)
+Collecting PyHamcrest!=1.10.0,>=1.9.0
+  Downloading PyHamcrest-2.0.2-py3-none-any.whl (52 kB)
+Collecting idna>=2.5
+  Downloading idna-3.1-py3-none-any.whl (58 kB)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.9/site-packages (from zope.interface>=4.1.3->Scrapy->-r requirements.txt (line 1)) (51.0.0)
+Building wheels for collected packages: protego, PyDispatcher, Twisted
+  Building wheel for protego (setup.py): started
+  Building wheel for protego (setup.py): finished with status 'done'
+  Created wheel for protego: filename=Protego-0.1.16-py3-none-any.whl size=7764 sha256=2543836f1e5ef808cf59cfa8f141f9b7ac3e195ffc2d18c318388b53b5fff078
+  Stored in directory: /tmp/pip-ephem-wheel-cache-v8y2h6hy/wheels/9b/e7/dd/5c83b657359b8cc1e116bfab153f22ee891862f6d78d1ddb82
+  Building wheel for PyDispatcher (setup.py): started
+  Building wheel for PyDispatcher (setup.py): finished with status 'done'
+  Created wheel for PyDispatcher: filename=PyDispatcher-2.0.5-py3-none-any.whl size=11515 sha256=dbaf6ba929fda437c26deda0685f7b6a6d36cde6476caf661fc73c1a6912306b
+  Stored in directory: /tmp/pip-ephem-wheel-cache-v8y2h6hy/wheels/a5/de/8a/4b52190a95d99c042ec6bd5ad2de3a3c1b5ce71d69f0bbd036
+  Building wheel for Twisted (setup.py): started
+  Building wheel for Twisted (setup.py): finished with status 'done'
+  Created wheel for Twisted: filename=Twisted-20.3.0-cp39-cp39-linux_x86_64.whl size=3087832 sha256=04c64045415463119e7d9a0937fef17e50fdf2df204687b7d86342afa07b1481
+  Stored in directory: /tmp/pip-ephem-wheel-cache-v8y2h6hy/wheels/e5/5c/53/f56b69010340b883474a456e8ee34b546e27f78f01b36701e3
+Successfully built protego PyDispatcher Twisted
+Installing collected packages: six, pycparser, w3lib, pyasn1, lxml, idna, cssselect, cffi, attrs, zope.interface, PyHamcrest, pyasn1-modules, parsel, jmespath, itemadapter, incremental, hyperlink, cryptography, constantly, Automat, typing-extensions, Twisted, service-identity, queuelib, pyOpenSSL, pygments, PyDispatcher, protego, itemloaders, commonmark, colorama, Scrapy, rich, python-dotenv, pymongo, colorlog
+Successfully installed Automat-20.2.0 PyDispatcher-2.0.5 PyHamcrest-2.0.2 Scrapy-2.4.1 Twisted-20.3.0 attrs-20.3.0 cffi-1.14.5 colorama-0.4.4 colorlog-4.7.2 commonmark-0.9.1 constantly-15.1.0 cryptography-3.4.4 cssselect-1.1.0 hyperlink-21.0.0 idna-3.1 incremental-17.5.0 itemadapter-0.2.0 itemloaders-1.0.4 jmespath-0.10.0 lxml-4.6.2 parsel-1.6.0 protego-0.1.16 pyOpenSSL-20.0.1 pyasn1-0.4.8 pyasn1-modules-0.2.8 pycparser-2.20 pygments-2.7.4 pymongo-3.11.3 python-dotenv-0.15.0 queuelib-1.5.0 rich-9.10.0 service-identity-18.1.0 six-1.15.0 typing-extensions-3.7.4.3 w3lib-1.22.0 zope.interface-5.2.0
+Removing intermediate container 4f56cb64b7b1
+ ---> 76f22966a572
+Step 10/11 : COPY . .
+ ---> 286fc8773480
+Step 11/11 : CMD scrapy crawl SOJobspider -L WARNING
+ ---> Running in e2fdaa8fdbd2
+Removing intermediate container e2fdaa8fdbd2
+ ---> 78ba1aa41d58
+Successfully built 78ba1aa41d58
+Successfully tagged job-engine:beta-pre-prod

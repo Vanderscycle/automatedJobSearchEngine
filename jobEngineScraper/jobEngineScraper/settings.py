@@ -45,13 +45,6 @@ scrapy.utils.log._get_handler = _get_handler_custom
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-# when ready we will move these to the .env file
-# MONGO_IP = '127.0.0.1'
-# MONGO_PORT = 27017
-# MONGO_DATABASE = 'jobSearch'
-
-# from pathlib import Path
-# BASE_DIR = Path(__file__).resolve().parent.parent.parent
 load_dotenv() # really cool as it searches the folder for the .env file
 MONGO_IP = os.getenv('MONGO_IP')
 MONGO_PORT = int(os.getenv('MONGO_PORT'))

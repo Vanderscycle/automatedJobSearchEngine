@@ -1,0 +1,8 @@
+Scrapy
+pymongo
+w3lib
+colorlog
+itemadapter
+nltk
+python-dotenv
+rich

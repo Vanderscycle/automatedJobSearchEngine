@@ -1,0 +1,30 @@
+version: '3' 
+services:
+  db:
+    image: mongo:latest
+    container_name: NoSQLDB
+    restart: always
+      env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${USERPASSWORD}
+    volumes:
+      - ./data/bin:/data/db
+    ports:
+      - 5000:27017
+    expose:
+      - 27017
+
+  job-engine-scraper:
+    build: ./jobEngineScraper
+    container_name: devjob-scraper-container
+    volumes: 
+      - ./jobEngineScraper:/usr/src/app/scraper
+    ports:
+      - 5001:6023
+    expose:
+      - 6023
+    depends_on:
+      - db
+# links is deprecated
