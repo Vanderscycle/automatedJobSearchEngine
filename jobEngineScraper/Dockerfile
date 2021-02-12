@@ -1,5 +1,6 @@
 FROM python:3
-LABEL maintainer "Henri Vandersleyen <hvandersleyen@gmail.com>"
+LABEL maintainer="Henri Vandersleyen' 
+LABEL maintainerEmail='hvandersleyen@gmail.com'
 # 6023 is scrapy's default port
 EXPOSE 6023
 # set work directly so that paths can be relative
