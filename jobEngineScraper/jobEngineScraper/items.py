@@ -17,6 +17,8 @@ class JobenginescraperItem(scrapy.Item):
     # name = scrapy.Field()
     positionName = scrapy.Field()
     site = scrapy.Field()
+    remote = scrapy.Field()
+    postedWhen = scrapy.Field()
     company = scrapy.Field()
     url = scrapy.Field()
     location = scrapy.Field()

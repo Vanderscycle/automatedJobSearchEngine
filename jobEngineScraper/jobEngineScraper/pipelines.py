@@ -22,6 +22,7 @@ class MongoPipeline(object):
         - outputs in the mongodb
     """
     def __init__(self, mongoIp, mongoPort, mongoDatabase, mongoCollection, username, password, authSource, mode):
+        self.conn = pymongo.MongoClient()
         self.mongoIp = mongoIp
         self.mongoPort = mongoPort
         self.mongoDatabase = mongoDatabase
@@ -77,3 +78,6 @@ class MongoPipeline(object):
         #     logger.log(f'key/value: {k} : {v}')
         return item
 
+#! know pipeline issues:
+# in docker mode we get massive errors (twisted problems)
+# works fine in local mode

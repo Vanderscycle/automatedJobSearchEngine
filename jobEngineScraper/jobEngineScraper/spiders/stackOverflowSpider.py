@@ -3,6 +3,10 @@ import re
 # used to create random breaks
 import time
 import random
+# to run the spider in a script
+# https://docs.scrapy.org/en/latest/topics/practices.html#run-scrapy-from-a-script
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 # scrapy.utils.markup is deprecated.
 import w3lib.html
 # making the terminal outputs clearers
@@ -26,7 +30,7 @@ class flyerSpider(scrapy.Spider):
     # settings only meant for the spider
     custom_settings = { 
         'MONGO_COLLECTION': 'stackOverflow',
-        'DUPEFILTER_DEBUG' : True,#allows the spider to not stop over duplicates 
+        # 'DUPEFILTER_DEBUG' : True,#allows the spider to not stop over duplicates 
         'ITEM_PIPELINES': { 
             'jobEngineScraper.pipelines.MongoPipeline': 300,
         }
@@ -79,6 +83,11 @@ class flyerSpider(scrapy.Spider):
         job = JobenginescraperItem()
         job['positionName'] = response.css('.fc-black-900::text').get()
         job['site'] = 'StackOverflow'
+        if response.css('.fc-yellow-500::text').get():
+            job['remote'] = True
+        else:
+            job['remote'] = False
+        job['postedWhen'] = response.css('#overview-items .mb24 li::text').get().strip()
         job['company'] = response.css('.fs-body3 .fc-black-500::text').get().strip().replace('–\r\n','')
         # job['company'] = response.css('._up-and-out::text').get() # doesn't always work
         job['url'] = response.url
@@ -92,11 +101,11 @@ class flyerSpider(scrapy.Spider):
         job['time'] = timestampReceival()
         yield job
 
-if __name__ == "__main__":
-    
-    process = CrawlerProcess()
-    process.crawl(MySpider)
-    process.start() 
+if __name__ == '__main__':
+    process = CrawlerProcess(settings=get_project_settings())
+    process.crawl('SOJobspider')
+    process.start()
+
 # (1) gets you the href of all jobs
 # response.css('.stretched-link::attr(href)').getall()
 # gets you their titles although only relevant as a way to determine if we should scrape or not
