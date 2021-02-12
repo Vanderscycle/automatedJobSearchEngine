@@ -49,8 +49,8 @@ load_dotenv() # really cool as it searches the folder for the .env file
 MONGO_IP = os.getenv('MONGO_IP')
 MONGO_PORT = int(os.getenv('MONGO_PORT'))
 MONGO_DATABASE = os.getenv('MONGO_DATABASE')
-USERNAME = str(os.getenv('USERNAME')),
-USERPASSWORD = str(os.getenv('USERPASSWORD')),
+USERNAME = os.getenv('USERNAME'),
+USERPASSWORD = os.getenv('USERPASSWORD'),
 AUTHSOURCE = os.getenv('AUTHSOURCE'),
 MODE = os.getenv('MODE')
 # SMARTPROXY_USER = os.environ.get("SMARTPROXY_USER") # how to do it
