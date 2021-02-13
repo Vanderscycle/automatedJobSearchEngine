@@ -48,21 +48,44 @@ class MongoPipeline(object):
         )
 
     # self.conn = pymongo.MongoClient(host='NoSQLDB',port=27017,username='root',password='password',authSource="admin")
+    def _connect_mongo(self,host, port, username=None, password=None):
+        """ A util for making a connection to mongo """
+
+        if username and password:
+            mongo_uri = 'mongodb://%s:%s@%s:%s/%s' % (username, password, host, port, db)
+            conn = pymongo.MongoClient(mongo_uri)
+        else:
+            conn = pymongo.MongoClient(host, port)
+
+        return conn
+
+    
     def open_spider(self, spider):
         if self.mode == 'docker':
-            self.conn = pymongo.MongoClient(
+            self.conn = self._connect_mongo(
                     host=self.mongoIp,
                     port=self.mongoPort,
                     username=self.mongoUsername,
-                    password=self.mongoUserPassword,
-                    authSource=self.authSource
+                    password=self.mongoUserPassword
                 )
+            # self.conn = pymongo.MongoClient(
+            #         host=self.mongoIp,
+            #         port=self.mongoPort,
+            #         username=self.mongoUsername,
+            #         password=self.mongoUserPassword,
+            #         authSource=self.authSource
+            #     )
         else:
             self.mongoIp = '127.0.0.1'
-            self.conn = pymongo.MongoClient(
-                    self.mongoIp,
-                    self.mongoPort
+            self.conn = self._connect_mongo(
+                    host=self.mongoIp,
+                    port=self.mongoPort
                 )
+            # self
+            # self.conn = pymongo.MongoClient(
+            #         self.mongoIp,
+            #         self.mongoPort
+            #     )
         self.db = self.conn[self.mongoDatabase]
         self.collection = self.db[self.mongoCollection]
 
