@@ -88,9 +88,10 @@ def nltkPreprocess(text):
     # we concatenate all list elements
     return ' '.join(clean)
 
-
-query = {"site": "StackOverflow"}
-df = read_mongo(MONGO_DATABASE,MONGO_COLLECTION,query)
-print(df)
-df['description'] = df['description'].apply(lambda x:nltkPreprocess(str(x)))
-update_mongo(MONGO_DATABASE,MONGO_COLLECTION,df)
+#otherwise we we do the relative import for the functions it will execute the file which we do not want to
+if __name__ == '__main__':
+    query = {"site": "StackOverflow"}
+    df = read_mongo(MONGO_DATABASE,MONGO_COLLECTION,query)
+    print(df)
+    df['description'] = df['description'].apply(lambda x:nltkPreprocess(str(x)))
+    update_mongo(MONGO_DATABASE,MONGO_COLLECTION,df)

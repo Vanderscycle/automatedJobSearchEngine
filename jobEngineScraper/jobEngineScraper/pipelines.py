@@ -48,7 +48,7 @@ class MongoPipeline(object):
         )
 
     # self.conn = pymongo.MongoClient(host='NoSQLDB',port=27017,username='root',password='password',authSource="admin")
-    def _connect_mongo(self,host,db, port, username=None, password=None):
+    def _connect_mongo(self,host, port,db=None, username=None, password=None):
         """ A util for making a connection to mongo """
 
         if username and password:
