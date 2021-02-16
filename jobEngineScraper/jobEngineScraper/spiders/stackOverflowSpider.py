@@ -23,7 +23,7 @@ from ..items import JobenginescraperItem,timestampReceival
 #importing the NLP preprocessor
 from ..preProcessingNLP import nltkPreprocess
 
-class flyerSpider(scrapy.Spider):
+class StackSpider(scrapy.Spider):
     # class variable for crawl command
     name = 'SOJobspider'
     page = 1
@@ -67,11 +67,11 @@ class flyerSpider(scrapy.Spider):
             yield scrapy.Request(nextPage,callback=self.subPageParser)
             
         # we want the url to the next page
-        flyerSpider.page += 1
-        url = f'?pg={flyerSpider.page}'
-        if flyerSpider.page <= 2: #testing purpose
+        StackSpider.page += 1
+        url = f'?pg={StackSpider.page}'
+        if StackSpider.page <= 2: #testing purpose
             # although I can visually see that the max is about 48 pages
-            logger.log(f'proceeding to page: {flyerSpider.page} url: {url}')
+            logger.log(f'proceeding to page: {StackSpider.page} url: {url}')
             nextPage = response.urljoin(url)
             yield scrapy.Request(nextPage,callback=self.pageParser)
 
@@ -98,6 +98,7 @@ class flyerSpider(scrapy.Spider):
             tempList.append(w3lib.html.remove_tags(str(response.css('.mb32.fc-medium div')[i].getall())))
         job['description'] = tempList
         job['applied'] = False
+        job['filtered'] = False
         job['time'] = timestampReceival()
         yield job
 

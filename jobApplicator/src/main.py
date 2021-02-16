@@ -13,6 +13,8 @@ from rich import (
     traceback,
     print
 )
+# tabulate to make the pandas rows more readable in a python script
+from tabulate import tabulate
 # website handler
 # https://docs.python.org/3/library/webbrowser.html
 import webbrowser
@@ -48,11 +50,84 @@ class jobParser(cmd.Cmd):
     waits for your next command
     packages cmd/rich/pymongo"""
     intro = 'Welcome to the command line interactive data Structure program.\nType help or ? to list commands.\n'
-    prompt = None
+    prompt = '(job engine) '
 
     def __init__(self):
         super(jobParser, self).__init__()
         pass
+    def do_mongoDBInfo(self):
+        """
+        method where that will return a number of predetermined statistics about the number of job application in the db.
+        """
+        # types of collections 
+        # numbers of job you have yet to apply
+        pass
+
+        
+    def do_applyToJobs(self,numberOfApplication):
+        """
+        
+        description:
+            - method where you will pass an int
+        """
+        # fun stats
+        applied = 0
+        rejected = 0
+        if not numberOfApplication or not numberOfApplication.isnumeric():
+            print(f'you have entered {numberOfApplication} which is invalid')
+            return 
+        query = {"$and":[ {"site": "StackOverflow"},{'applied':False}]} #we wshould not filter per collection and instead per applied
+        # fetching the info from the df and populating a dataFrame
+        df = read_mongo(MONGO_DATABASE,MONGO_COLLECTION,query)
+        # since mongo limit requires us to use a different synthax for the querry method it is easier to shrink the df
+        df = df[:int(numberOfApplication)]
+        for rowIndex, row in df.iterrows():
+            print(f'job number: {rowIndex}')
+            # printing the information
+            for colIndex,col in row.iteritems():
+
+                # we want to skip the unfiltered description
+                if colIndex == 'description':
+                    pass
+
+                else:
+                    print(colIndex,col)
+
+            answer = input("\nDo you want to apply for this job (y/n)?")
+            if answer.lower() in ['y', 'yes']:
+                # opens a webpage where job offer is hosted
+                webbrowser.open_new_tab(row['url'])
+                # need to integrate the cover letter
+                df.at[rowIndex,'applied'] = True
+                # sometimes it is possible that the spider did not scrape the right item so we must give flexibility to the user
+                doubleCheck = input("If the job posting did not fit what you set the spider to do do you want to continue with the job posting (y/n)?")
+                if doubleCheck.lower() in ['n', 'no']:
+                    # df.at[rowIndex,'filtered'] = 'Rejected' # requires a new scrape
+                    print(f'rejecting the job posting')
+                    rejected+=1
+                else:
+                    # df.at[rowIndex,'filtered'] = 'Applied' # requires a new scrape
+                    applied +=1
+            else:
+                print(f'rejecting the job posting')
+                rejected+=1
+                # df.at[rowIndex,'filtered'] = 'Rejected' # requires a new scrape
+                df.at[rowIndex,'applied'] = True
+        # db changes
+        print(f'Done with the search. You have applied to {applied} jobs online and ignored {rejected} jobs')
+        print('updating mongo database')
+        # update_mongo(MONGO_DATABASE,MONGO_COLLECTION,df)
+
+
+    def default(self, line): 
+        """
+        Allows us to use the app as a normal commandline
+        """
+        try:
+            return exec(line, globals())
+        except:
+            self.console.print_exception()
+
 
 if __name__ == '__main__':
     # setting the rich environment variables
@@ -66,8 +141,7 @@ if __name__ == '__main__':
     MONGO_COLLECTION = 'stackOverflow'
 
     # since we will have multiple website we will scrape from multiple websites we should list them (from the db) and ask 
-    query = {"site": "StackOverflow"}
-    df = read_mongo(MONGO_DATABASE,MONGO_COLLECTION,query)
-    url = 'google.com'
-    webbrowser.open_new_tab(url)
 
+
+    # also should check the date when something was posted and then update it postedWhen += (now - (postedWhen + dateScraped))
+    jobParser().cmdloop()

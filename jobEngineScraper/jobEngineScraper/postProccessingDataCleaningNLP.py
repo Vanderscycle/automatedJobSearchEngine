@@ -92,6 +92,7 @@ def nltkPreprocess(text):
 if __name__ == '__main__':
     query = {"site": "StackOverflow"}
     df = read_mongo(MONGO_DATABASE,MONGO_COLLECTION,query)
-    print(df)
+    df = df[:10]
+    print(len(df))
     df['description'] = df['description'].apply(lambda x:nltkPreprocess(str(x)))
     update_mongo(MONGO_DATABASE,MONGO_COLLECTION,df)
