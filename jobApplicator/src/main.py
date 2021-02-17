@@ -13,8 +13,6 @@ from rich import (
     traceback,
     print
 )
-# tabulate to make the pandas rows more readable in a python script
-from tabulate import tabulate
 # website handler
 # https://docs.python.org/3/library/webbrowser.html
 import webbrowser
@@ -52,9 +50,12 @@ class jobParser(cmd.Cmd):
     intro = 'Welcome to the command line interactive data Structure program.\nType help or ? to list commands.\n'
     prompt = '(job engine) '
 
+
     def __init__(self):
         super(jobParser, self).__init__()
-        pass
+        self.console = Console()
+
+
     def do_mongoDBInfo(self):
         """
         method where that will return a number of predetermined statistics about the number of job application in the db.
@@ -128,6 +129,12 @@ class jobParser(cmd.Cmd):
         except:
             self.console.print_exception()
 
+
+    def do_exit(self,arg):
+        """
+        exits the command line
+        """
+        exit()
 
 if __name__ == '__main__':
     # setting the rich environment variables
