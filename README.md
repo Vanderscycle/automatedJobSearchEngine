@@ -1,4 +1,4 @@
-Scraping job posting from popular job hosting services, storing them in a db where I can accurately track which jobs I have applied to.
+Scraping job posting from popular job hosting services, storing them in a db where I can accurately track which jobs I have applied to. I am a junior dev and will welcome any help especially, if we can dockerize the program.
 
 You will need to create a .env file and store all your password and fill-in the following passwords.
 ```
