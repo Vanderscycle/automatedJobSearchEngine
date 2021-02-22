@@ -132,7 +132,7 @@ class StackSpider(scrapy.Spider):
             for i in range(len(response.css('.mb32.fc-medium div').getall())):
                 tempList.append(w3lib.html.remove_tags(str(response.css('.mb32.fc-medium div')[i].getall())))
         except Exception as e:
-            logger.log(e.message, e.args)
+            logger.log('error')
             tempList.append('Description Not Found')
 
         job['description'] = tempList
