@@ -1,2 +1,3 @@
-Plan:
-scrape the several job hosting engines and use NLP to classify the title of the job (whether it is what I am looking for e.g. front-end vs backend)
+Scraping job posting from popular job hosting services, storing them in a db where I can accurately track which jobs I have applied to.
+
+This project will require

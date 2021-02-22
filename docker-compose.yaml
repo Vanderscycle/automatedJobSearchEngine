@@ -2,7 +2,7 @@ version: '3'
 services:
   db:
     image: mongo:latest
-    container_name: NoSQLDB
+    container_name: Mongo-container
     restart: always
     # env_file:
     #   - .env
@@ -29,4 +29,9 @@ services:
       - 6023
     depends_on:
       - db
+  job-applicator:
+    build: ./jobApplicator
+    container_name: job-applicator-container
+    env_file:
+      - .env  
 # links is deprecated

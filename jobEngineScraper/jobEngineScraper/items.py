@@ -24,4 +24,13 @@ class JobenginescraperItem(scrapy.Item):
     location = scrapy.Field()
     description = scrapy.Field()
     applied = scrapy.Field()
+    filtered = scrapy.Field()
     time = scrapy.Field()
+    # https://stackoverflow.com/questions/14390945/suppress-scrapy-item-printed-in-logs-after-pipeline
+    def __repr__(self):
+        """only print out attr1 after exiting the Pipeline"""
+        return repr({
+            "positionName": self['positionName'],
+            "site": self['site'],
+            "company":self['company']
+            })

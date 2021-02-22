@@ -46,6 +46,7 @@ scrapy.utils.log._get_handler = _get_handler_custom
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 load_dotenv() # really cool as it searches the folder for the .env file
+# DB pass
 MONGO_IP = os.getenv('MONGO_IP')
 MONGO_PORT = int(os.getenv('MONGO_PORT'))
 MONGO_DATABASE = os.getenv('MONGO_DATABASE')
@@ -53,6 +54,7 @@ USERNAME = os.getenv('USERNAME'),
 USERPASSWORD = os.getenv('USERPASSWORD'),
 AUTHSOURCE = os.getenv('AUTHSOURCE'),
 MODE = os.getenv('MODE')
+
 # SMARTPROXY_USER = os.environ.get("SMARTPROXY_USER") # how to do it
 
 BOT_NAME = 'jobEngineScraper'
@@ -65,7 +67,7 @@ NEWSPIDER_MODULE = 'jobEngineScraper.spiders'
 #USER_AGENT = 'jobEngineScraper (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+# ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -138,13 +140,39 @@ AUTOTHROTTLE_ENABLED = True
 # github repo
 # https://github.com/alecxe/scrapy-fake-useragent
 DOWNLOADER_MIDDLEWARES = {
+    #fake userAgen
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
     'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
     'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 401,
+    #privoxy
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+    'jobEngineScraper.middlewares.ProxyMiddleware': 100
 }
 FAKEUSERAGENT_PROVIDERS = [
     'scrapy_fake_useragent.providers.FakeUserAgentProvider',  # this is the first provider we'll try
     'scrapy_fake_useragent.providers.FakerProvider',  # if FakeUserAgentProvider fails, we'll use faker to generate a user-agent string for us
     'scrapy_fake_useragent.providers.FixedUserAgentProvider',  # fall back to USER_AGENT value
 ]
+# when the times comes for proxies
+# https://github.com/WiliTest/Anonymous-scrapping-Scrapy-Tor-Privoxy-UserAgent
+
+
+
+# splash spider settings from
+# https://github.com/scrapy-plugins/scrapy-splash
+# 'SPLASH_URL' : 'http://localhost:8050',
+# 'DOWNLOADER_MIDDLEWARES' : {
+#     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+#     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+#     'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+#     'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 401,
+#     'scrapy_splash.SplashCookiesMiddleware': 723,
+#     'scrapy_splash.SplashMiddleware': 725,
+#     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+#     },
+# 'SPIDER_MIDDLEWARES' : {
+#     'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+#     },
+# 'DUPEFILTER_CLASS' : 'scrapy_splash.SplashAwareDupeFilter',
+# 'HTTPCACHE_STORAGE' : 'scrapy_splash.SplashAwareFSCacheStorage'

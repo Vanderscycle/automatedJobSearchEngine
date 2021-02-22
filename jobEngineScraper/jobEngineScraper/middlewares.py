@@ -4,11 +4,51 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-
+#requests to check the ip
+import requests
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
+#https://stackoverflow.com/questions/43942689/error-while-receiving-a-control-message-socketclosed-empty-socket-content-i
+from stem.util.log import get_logger
+logger = get_logger()
+logger.propagate = False
+
+# https://stackoverflow.com/questions/45009940/scrapy-with-privoxy-and-tor-how-to-renew-ip/45010141
+from toripchanger import TorIpChanger
+from stem import Signal
+from stem.control import Controller
+# password handling
+import os
+from dotenv import load_dotenv
+# TOR
+TOR_PASSWORD = os.getenv('TOR_PASS')
+# A Tor IP will be reused only after 10 different IPs were used.
+ip_changer = TorIpChanger(tor_password=TOR_PASSWORD,reuse_threshold=10)
 
 
+class ProxyMiddleware(object):
+    """
+
+    learning about to learn about TOR
+    https://github.com/WiliTest/Anonymous-scrapping-Scrapy-Tor-Privoxy-UserAgent
+    # setting TOR for the first time on Linux
+    https://jarroba.com/anonymous-scraping-by-tor-network/
+    config the to for the first time
+    https://2019.www.torproject.org/docs/faq#torrc
+    about TorIpChanger
+    https://gist.github.com/DusanMadar/8d11026b7ce0bce6a67f7dd87b999f6b
+    """
+    _requests_count = 0
+
+    def process_request(self, request, spider):
+        #every 10 requests will generate a new ip
+        self._requests_count += 1
+        if self._requests_count > 10:
+            self._requests_count = 0 
+            ip_changer.get_new_ip()
+
+        request.meta['proxy'] = 'http://127.0.0.1:8118'
+        spider.log(f"Proxy : {request.meta['proxy']}")
 class JobenginescraperSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the

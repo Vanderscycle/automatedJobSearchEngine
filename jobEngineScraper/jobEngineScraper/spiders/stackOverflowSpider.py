@@ -25,12 +25,13 @@ from ..preProcessingNLP import nltkPreprocess
 
 class StackSpider(scrapy.Spider):
     # class variable for crawl command
-    name = 'SOJobspider'
+    name = 'SOJobSpider'
     page = 1
+    nextPage = None
     # settings only meant for the spider
     custom_settings = { 
         'MONGO_COLLECTION': 'stackOverflow',
-        # 'DUPEFILTER_DEBUG' : True,#allows the spider to not stop over duplicates 
+        'DUPEFILTER_CLASS' : 'scrapy.dupefilters.BaseDupeFilter',
         'ITEM_PIPELINES': { 
             'jobEngineScraper.pipelines.MongoPipeline': 300,
         }
@@ -38,16 +39,37 @@ class StackSpider(scrapy.Spider):
     }
 
     
-    def start_requests(self): 
+    def start_requests(self):
+        """
+        Where the spider starts its search
+        """ 
         start_url = 'https://stackoverflow.com/jobs'
         yield scrapy.Request(url=start_url, callback=self.pageParser)
+
     
+    def iHazMyIIPChecked(self,response):
+        """
+        check your ip in the cli
+        curl http://icanhazip.com/
+        """
+        logger.log(f"IP: {response.css('body p::text').get()}")
+        yield scrapy.Request(url=StackSpider.nextPage, callback=self.pageParser)
+        
+        
+
     def pageParser(self,response):
         """
         goes through all the titles and and creates an array where the subPageParser will scrape from.
         """
+        # Console.log(response.meta)
+        # logger.log(f'--------short Break 0-5 seconds')
+        # time.sleep(random.randint(0, 500))
+
+        logger.log(f" fake user agent used: {response.request.headers['User-Agent']}")
         urlsToVisit = list()
-        for title,url in zip(response.css('.stretched-link::text').getall(),response.css('.stretched-link::attr(href)').getall()):
+        for title,url in zip(response.css(
+            '.stretched-link::text').getall(),
+            response.css('.stretched-link::attr(href)').getall()):
             if nltkPreprocess(title) == 'wanted':
                 urlsToVisit.append([title,url])
                 # logger.log(f'Wanted job: Job title: {title} url: {url}')
@@ -58,28 +80,35 @@ class StackSpider(scrapy.Spider):
         
         # extracting the info
         for title,url in urlsToVisit:
-
-            # logger.log(f'--------short Break 0-5 seconds')
-            # time.sleep(random.randint(0, 5))
             
-            logger.log(f'Job going to title: {title} url: {url}')
+            # logger.log(f'Job going to title: {title} url: {url}')
             nextPage = response.urljoin(url)
             yield scrapy.Request(nextPage,callback=self.subPageParser)
             
         # we want the url to the next page
         StackSpider.page += 1
         url = f'?pg={StackSpider.page}'
-        if StackSpider.page <= 2: #testing purpose
+        if StackSpider.page <= 40: #testing purpose
             # although I can visually see that the max is about 48 pages
             logger.log(f'proceeding to page: {StackSpider.page} url: {url}')
-            nextPage = response.urljoin(url)
-            yield scrapy.Request(nextPage,callback=self.pageParser)
+            StackSpider.nextPage = response.urljoin(url)
+            # yield scrapy.Request(url='http://icanhazip.com/', callback=self.iHazMyIIPChecked)
+            yield scrapy.Request(StackSpider.nextPage,callback=self.pageParser)
 
 
     def subPageParser(self,response):
         """
-        test
+        Description:
+            - this is super powerful as we make full use of Scrapy's async capabilities 
+            in the event that a there's an error in the response it doesn't crash the spider
+        Input:
+            - response from the pageParger response
+        Output:
+            - the dictionary is then sent to the 
+            
         """
+        logger.log(f"fake user agent used: {response.request.headers['User-Agent']}")
+
         job = JobenginescraperItem()
         job['positionName'] = response.css('.fc-black-900::text').get()
         job['site'] = 'StackOverflow'
@@ -88,14 +117,24 @@ class StackSpider(scrapy.Spider):
         else:
             job['remote'] = False
         job['postedWhen'] = response.css('#overview-items .mb24 li::text').get().strip()
-        job['company'] = response.css('.fs-body3 .fc-black-500::text').get().strip().replace('–\r\n','')
+        try:
+            job['company'] = response.css('.mb4 .fc-black-700::text').get().strip().replace('–\r\n','')
+        except Exception as e:
+            # message is deprecated
+            logger.log(str(e))
+            job['company'] = 'Not found'
         # job['company'] = response.css('._up-and-out::text').get() # doesn't always work
         job['url'] = response.url
         job['location'] = response.css('.mr8 .fw-bold::text').get() # can't be bothered with regex at the moment
-        # using w3lib to clean the html soup
+        # using w3lib to clean the html soup (may have to do a try/except block)
         tempList = list()
-        for i in range(len(response.css('.mb32.fc-medium div').getall())):
-            tempList.append(w3lib.html.remove_tags(str(response.css('.mb32.fc-medium div')[i].getall())))
+        try:
+            for i in range(len(response.css('.mb32.fc-medium div').getall())):
+                tempList.append(w3lib.html.remove_tags(str(response.css('.mb32.fc-medium div')[i].getall())))
+        except Exception as e:
+            logger.log(e.message, e.args)
+            tempList.append('Description Not Found')
+
         job['description'] = tempList
         job['applied'] = False
         job['filtered'] = False
@@ -127,3 +166,7 @@ if __name__ == '__main__':
 # https://stackoverflow.com/questions/30345623/scraping-dynamic-content-using-python-scrapy
 # for indeed (will have to do it manually)
 # response.css('#resultsCol .jobsearch-SerpJobCard .title')[0].getall()
+
+            # pause timer if required
+            # logger.log(f'--------short Break 0-5 seconds')
+            # time.sleep(random.randint(0, 5))

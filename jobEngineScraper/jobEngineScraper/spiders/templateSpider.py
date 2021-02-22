@@ -123,11 +123,3 @@ class indeedSpider(scrapy.Spider):
 # the href of the job
 # response.css('#resultsCol .jobsearch-SerpJobCard h2 a::attr(href)')[0].getall()
 
-# Sub pages doesn't work
-# location response.css('#resultsCol .jobsearch-SerpJobCard .sjcl .location::text').getall()
-# posted ago
-# response.css('#resultsCol .jobsearch-SerpJobCard .date::text').getall()
-
-# job company name
-# # response.css('#resultsCol .jobsearch-SerpJobCard .sjcl .turnstileLink::text').getall()
-# response.css('#resultsCol .jobsearch-SerpJobCard .sjcl .company::text').getall()

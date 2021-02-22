@@ -13,6 +13,7 @@ from rich import (
     traceback,
     print
 )
+from subprocess import (call,run)
 # website handler
 # https://docs.python.org/3/library/webbrowser.html
 import webbrowser
@@ -25,16 +26,27 @@ import sys
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 pymongoFuncPath = 'jobEngineScraper/jobEngineScraper'
 pymongoFuncPath = os.path.join(BASE_DIR,pymongoFuncPath)
-print(pymongoFuncPath)
-
 sys.path.append(pymongoFuncPath)
 
 from postProccessingDataCleaningNLP import (
     _connect_mongo,
-    read_mongo,
-    update_mongo
+    read_mongo
 )
 
+def update_mongo(db, collection,df, host='localhost', port=27017, username=None, password=None, no_id=False):
+    """ Read from Mongo and Store into DataFrame """
+
+    # Connect to MongoDB
+    conn = _connect_mongo(host=host, port=port, username=username, password=password, db=db)
+    db = conn[db]
+    # Make a query to the specific DB and Collection
+    updates = []
+
+    for _, row in df.iterrows():
+        updates.append(pymongo.UpdateOne({'_id': row.get('_id')}, {'$set': {'filtered': row.get('filtered')}}, upsert=True))
+        updates.append(pymongo.UpdateOne({'_id': row.get('_id')}, {'$set': {'applied': row.get('applied')}}, upsert=True))
+
+    db[collection].bulk_write(updates)
 
 class jobParser(cmd.Cmd):
     """sudo code
@@ -56,13 +68,17 @@ class jobParser(cmd.Cmd):
         self.console = Console()
 
 
-    def do_mongoDBInfo(self):
+    def do_mongoDBInfo(self, arg):
         """
         method where that will return a number of predetermined statistics about the number of job application in the db.
         """
         # types of collections 
         # numbers of job you have yet to apply
-        pass
+
+        df = read_mongo(MONGO_DATABASE,MONGO_COLLECTION,{}, no_id=True)
+        print(f'jobs not yet viewed {len(df[df["applied"].isin([False])])} Jobs viewed {len(df[df["applied"].isin([True])])}')
+        print(f'Out of the viewed jobs you rejected (so far): {len(df[df["filtered"].isin(["Rejected"])])} and applied to {len(df[df["filtered"].isin(["Applied"])])} ')
+
 
         
     def do_applyToJobs(self,numberOfApplication):
@@ -88,6 +104,7 @@ class jobParser(cmd.Cmd):
             for colIndex,col in row.iteritems():
 
                 # we want to skip the unfiltered description
+                # we could also drop the column from the df
                 if colIndex == 'description':
                     pass
 
@@ -103,21 +120,31 @@ class jobParser(cmd.Cmd):
                 # sometimes it is possible that the spider did not scrape the right item so we must give flexibility to the user
                 doubleCheck = input("If the job posting did not fit what you set the spider to do do you want to continue with the job posting (y/n)?")
                 if doubleCheck.lower() in ['n', 'no']:
-                    # df.at[rowIndex,'filtered'] = 'Rejected' # requires a new scrape
+                    df.at[rowIndex,'filtered'] = 'Rejected' 
                     print(f'rejecting the job posting')
                     rejected+=1
                 else:
-                    # df.at[rowIndex,'filtered'] = 'Applied' # requires a new scrape
+                    df.at[rowIndex,'filtered'] = 'Applied' 
                     applied +=1
+                    # git clone 
+                    # https://stackoverflow.com/questions/1911109/how-do-i-clone-a-specific-git-branch
+                    coverLetterFilePath = os.path.join(BASE_DIR,'Cover-Letter-Generator/') 
+                    
+                    call(["python", coverLetterFilePath + 'main.py'])
+                    # /lowriter --headless --convert-to pdf *.docx
+                    call(["lowriter --headless --convert-to pdf *.docx"],cwd= coverLetterFilePath + 'coverLetters/',shell=True)
+                    call(["rm *.docx"],cwd= coverLetterFilePath + 'coverLetters/',shell=True)
+            
             else:
                 print(f'rejecting the job posting')
                 rejected+=1
-                # df.at[rowIndex,'filtered'] = 'Rejected' # requires a new scrape
+                df.at[rowIndex,'filtered'] = 'Rejected' 
                 df.at[rowIndex,'applied'] = True
         # db changes
         print(f'Done with the search. You have applied to {applied} jobs online and ignored {rejected} jobs')
         print('updating mongo database')
-        # update_mongo(MONGO_DATABASE,MONGO_COLLECTION,df)
+        print(df)
+        update_mongo(MONGO_DATABASE,MONGO_COLLECTION,df)
 
 
     def default(self, line): 
