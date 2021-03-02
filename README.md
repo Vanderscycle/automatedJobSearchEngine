@@ -22,7 +22,7 @@ WEBSITE=https://github.com/Vanderscycle
 GITHUB=https://github.com/Vanderscycle
 ```
 
-The cover letter generator is from a forked git repo that I [modified][https://github.com/Vanderscycle/Cover-Letter-Generator). To obtain the files you will need to get the files using a git clone or your forked repo at the same level as this repo. 
+The cover letter generator is from a forked git repo that I [modified](https://github.com/Vanderscycle/Cover-Letter-Generator). To obtain the files you will need to get the files using a git clone or your forked repo at the same level as this repo. 
 ```git
 git clone -b personal/cover-letter https://github.com/Vanderscycle/Cover-Letter-Generator.git
  ```
