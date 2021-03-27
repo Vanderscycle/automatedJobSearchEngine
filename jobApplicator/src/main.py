@@ -81,19 +81,21 @@ class jobParser(cmd.Cmd):
 
 
         
-    def do_applyToJobs(self,numberOfApplication):
+    def do_applyToJobs(self,line):
         """
         
         description:
             - method where you will pass an int
         """
         # fun stats
+        numberOfApplication,collection = [arg for arg in line.split()]
+        print(numberOfApplication,collection)
         applied = 0
         rejected = 0
         if not numberOfApplication or not numberOfApplication.isnumeric():
             print(f'you have entered {numberOfApplication} which is invalid')
             return 
-        query = {"$and":[ {"site": "StackOverflow"},{'applied':False}]} #we wshould not filter per collection and instead per applied
+        query = {"$and":[ {"site": 'stackOverflow'},{'applied':False}]} #we we should not filter per collection and instead per applied
         # fetching the info from the df and populating a dataFrame
         df = read_mongo(MONGO_DATABASE,MONGO_COLLECTION,query)
         # since mongo limit requires us to use a different synthax for the querry method it is easier to shrink the df
@@ -134,7 +136,7 @@ class jobParser(cmd.Cmd):
                     # /lowriter --headless --convert-to pdf *.docx
                     call(["lowriter --headless --convert-to pdf *.docx"],cwd= coverLetterFilePath + 'coverLetters/',shell=True)
                     call(["rm *.docx"],cwd= coverLetterFilePath + 'coverLetters/',shell=True)
-            
+            # lowriter --headless --convert-to pdf *.docx && rm *.docx
             else:
                 print(f'rejecting the job posting')
                 rejected+=1
